@@ -1,7 +1,6 @@
 import './App.css';
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import Typed from "typed.js";
 import {
   AppBar,
   Toolbar,
@@ -27,6 +26,9 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Avatar,
+  Rating,
+  MobileStepper,
 } from "@mui/material";
 import {
   Code,
@@ -38,14 +40,43 @@ import {
   Brightness7,
   Close,
   CheckCircle,
+  Dashboard,
+  TrendingUp,
+  Security,
 } from "@mui/icons-material";
+import SwipeableViews from 'react-swipeable-views';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const heroSlides = [
+    {
+      icon: <Dashboard sx={{ fontSize: 60, color: '#4dd0e1', mb: 2 }} />,
+      title: "Transforming Ideas into Digital Reality",
+      desc: "I design and build scalable, secure, and beautiful web applications for modern businesses."
+    },
+    {
+      icon: <TrendingUp sx={{ fontSize: 60, color: '#1976d2', mb: 2 }} />,
+      title: "Driving Business Growth with Technology",
+      desc: "Delivering robust solutions that accelerate your business and empower your teams."
+    },
+    {
+      icon: <Security sx={{ fontSize: 60, color: '#dc004e', mb: 2 }} />,
+      title: "Secure, Reliable, and Future-Ready",
+      desc: "Expert in full-stack development, cloud, and data security for mission-critical projects."
+    }
+  ];
+
+  // Auto-advance hero slider every 3 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [selectedProject, setSelectedProject] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const typedRef = useRef(null);
 
   const theme = createTheme({
     palette: {
@@ -75,22 +106,6 @@ function App() {
     },
   });
 
-  useEffect(() => {
-    if (typedRef.current) {
-      typedRef.current.destroy();
-    }
-
-    typedRef.current = new Typed("#typed", {
-      strings: ["Software Developer", "Full Stack Developer", "React Developer", "Backend Engineer"],
-      typeSpeed: 50,
-      backSpeed: 30,
-      loop: true,
-    });
-
-    return () => {
-      if (typedRef.current) typedRef.current.destroy();
-    };
-  }, []);
 
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -416,6 +431,9 @@ function App() {
               <Button color="inherit" onClick={() => scrollTo("projects")}>
                 Projects
               </Button>
+               <Button color="inherit" onClick={() => scrollTo("testimonials")}>
+                Testimonials
+              </Button>
               <Button color="inherit" onClick={() => scrollTo("contact")}>
                 Contact
               </Button>
@@ -430,13 +448,9 @@ function App() {
           </Toolbar>
         </AppBar>
 
-        {/* HERO SECTION */}
+        {/* HERO SECTION - Professional Slider */}
         <Box
           id="hero"
-          component={motion.div}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
           sx={{
             minHeight: "100vh",
             display: "flex",
@@ -449,53 +463,73 @@ function App() {
             pb: 4,
           }}
         >
-          <Container maxWidth="lg">
-            <Box sx={{ textAlign: "center", color: "white" }}>
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-              >
-                <Typography variant="h2" sx={{ mb: 2, fontWeight: "bold" }}>
-                  Hi, I'm Mahadev
-                </Typography>
-                <Typography variant="h5" sx={{ mb: 1 }}>
-                  Full Stack Developer
-                </Typography>
-                <Typography variant="h6" sx={{ mb: 3 }}>
-                  I'm a{" "}
-                  <span id="typed" style={{ color: "#4dd0e1", fontWeight: "bold" }}></span>
-                </Typography>
-              </motion.div>
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-              >
-                <Typography variant="body1" sx={{ mb: 1, opacity: 0.9, fontSize: "1.1rem" }}>
-                  5+ years of proven expertise building robust, scalable web and mobile applications that solve real business challenges.
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 4, opacity: 0.85, fontSize: "1rem" }}>
-                  I specialize in delivering end-to-end dynamic web solutions with cutting-edge technologies, from architecture and development to deployment and maintenance.
-                </Typography>
-                <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => scrollTo("contact")}
-                  >
-                    Get in Touch
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{ color: "white", borderColor: "white" }}
-                    onClick={() => scrollTo("portfolio")}
-                  >
-                    View My Work
-                  </Button>
+          <Container maxWidth="md">
+            <SwipeableViews
+              index={heroIndex}
+              onChangeIndex={setHeroIndex}
+              enableMouseEvents
+              style={{ borderRadius: 16 }}
+            >
+              {heroSlides.map((slide, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    minHeight: { xs: 400, md: 500 },
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    px: { xs: 2, md: 8 },
+                    py: 6,
+                  }}
+                >
+                  {slide.icon}
+                  <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
+                    {slide.title}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mb: 4, textAlign: "center", opacity: 0.9 }}>
+                    {slide.desc}
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => scrollTo("contact")}
+                    >
+                      Get in Touch
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{ color: "white", borderColor: "white" }}
+                      onClick={() => scrollTo("projects")}
+                    >
+                      View My Work
+                    </Button>
+                  </Box>
                 </Box>
-              </motion.div>
-            </Box>
+              ))}
+            </SwipeableViews>
+            <MobileStepper
+              steps={heroSlides.length}
+              position="static"
+              activeStep={heroIndex}
+              nextButton={null}
+              backButton={null}
+              sx={{
+                background: "transparent",
+                justifyContent: "center",
+                mt: 2,
+                ".MuiMobileStepper-dot": {
+                  backgroundColor: "#fff",
+                  opacity: 0.5,
+                },
+                ".MuiMobileStepper-dotActive": {
+                  backgroundColor: "#4dd0e1",
+                  opacity: 1,
+                },
+              }}
+            />
           </Container>
         </Box>
 
@@ -823,6 +857,56 @@ function App() {
           </Container>
         </Box>
 
+          {/* TESTIMONIALS SECTION */}
+          <Box
+            id="testimonials"
+            sx={{
+              py: 8,
+              background: theme.palette.mode === "dark"
+                ? "linear-gradient(135deg, #232526 0%, #414345 100%)"
+                : "linear-gradient(135deg, #f8fafc 0%, #e0eafc 100%)",
+              color: theme.palette.mode === "dark" ? "white" : "#222",
+            }}
+          >
+            <Container maxWidth="md">
+              <Typography variant="h4" sx={{ mb: 6, textAlign: "center" }}>
+                Testimonials
+              </Typography>
+              <Grid container spacing={4} justifyContent="center">
+                {[{
+                  name: "Amit Sharma",
+                  title: "Senior Software Engineer, Infosys",
+                  quote: "Mahadev is a highly skilled developer with a keen eye for detail. His work on our enterprise app was outstanding and delivered ahead of schedule.",
+                  avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                  rating: 5
+                }, {
+                  name: "Priya Desai",
+                  title: "Project Manager, TCS",
+                  quote: "Professional, reliable, and innovative. Mahadev's solutions helped us streamline our workflow and improve project outcomes.",
+                  avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                  rating: 5
+                }, {
+                  name: "Rahul Verma",
+                  title: "Tech Lead, Cognizant",
+                  quote: "Excellent communication and technical expertise. Mahadev consistently exceeds expectations and is a pleasure to work with.",
+                  avatar: "https://randomuser.me/api/portraits/men/65.jpg",
+                  rating: 4.5
+                }].map((t, idx) => (
+                  <Grid item xs={12} sm={6} md={4} key={idx}>
+                    <Card sx={{ p: 3, borderRadius: 3, boxShadow: 4, height: "100%", display: "flex", flexDirection: "column", alignItems: "center", bgcolor: theme.palette.mode === "dark" ? "#232526" : "#fff" }}>
+                      <Avatar src={t.avatar} alt={t.name} sx={{ width: 64, height: 64, mb: 2 }} />
+                      <Typography variant="h6" sx={{ fontWeight: "bold", mb: 0.5, textAlign: "center" }}>{t.name}</Typography>
+                      <Typography variant="body2" color="textSecondary" sx={{ mb: 2, textAlign: "center" }}>{t.title}</Typography>
+                      <Rating value={t.rating} precision={0.5} readOnly sx={{ mb: 2 }} />
+                      <Typography variant="body1" sx={{ fontStyle: "italic", textAlign: "center" }}>
+                        "{t.quote}"
+                      </Typography>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Container>
+          </Box>
         {/* CONTACT SECTION */}
         <Box
           id="contact"
